@@ -1,0 +1,52 @@
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.0.1
+    container_name: Elastic_Search
+    environment:
+      - node.name=elasticsearch
+      - cluster.name=datasearch
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - cluster.initial_master_nodes=elasticsearch
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "9200:9200"
+    volumes:
+      - D:\Docker\Data\Elasticsearch:/usr/share/elasticsearch/data
+    networks:
+      - ecommerce-network    
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1" ]
+      interval: 10s
+      retries: 5
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.0.1
+    container_name: Kibana
+    ports:
+      - "5601:5601"
+    networks:
+      - ecommerce-network
+    depends_on:
+        elasticsearch:
+            condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5601/api/status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  seq:
+    image: datalust/seq:latest
+    container_name: SEQ
+    ports:
+      - "9000:80"
+      - "5341:5341"
+    environment:
+      - ACCEPT_EULA=Y
+    # volumes:
+    #   - seq_data:/data
+    networks:
+      - ecommerce-network

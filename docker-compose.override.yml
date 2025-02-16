@@ -1,0 +1,64 @@
+services:
+  auth:
+    image: auth-service-api:latest
+    container_name: AuthApi
+    build:
+      context: ./AuthService
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Staging
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - ecommerce-network
+
+  user:
+    image: user-service-api:latest
+    container_name: UserApi
+    build:
+      context: ./UserService
+      dockerfile: Dockerfile
+      args:
+        GITHUB_USERNAME: ${GITHUB_USERNAME}
+        GITHUB_TOKEN: ${GITHUB_TOKEN}
+    env_file:
+      - .env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Staging
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - ecommerce-network
+
+  product:
+    image: product-service-api:latest
+    container_name: ProductApi
+    build:
+      context: ./ProductService
+      dockerfile: Dockerfile
+      args:
+        GITHUB_USERNAME: ${GITHUB_USERNAME}
+        GITHUB_TOKEN: ${GITHUB_TOKEN}
+    env_file:
+      - .env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Staging
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kibana:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+      seq:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://ProductApi:8084/api/v1/product/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - ecommerce-network
