@@ -30,7 +30,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Staging
     volumes:
-      - D:\ECommerce\Services\SSC.pfx:/app/certificate.pfx:ro
+      - D:\E-Commerce\Services\SSC.pfx:/app/certificate.pfx:ro
     networks:
       - ecommerce-network
     deploy:
