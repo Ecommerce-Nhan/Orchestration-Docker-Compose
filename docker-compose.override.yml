@@ -10,6 +10,10 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      kibana:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
     networks:
       - ecommerce-network
 
@@ -28,6 +32,10 @@ services:
       - ASPNETCORE_ENVIRONMENT=Staging
     depends_on:
       postgres:
+        condition: service_healthy
+      kibana:
+        condition: service_healthy
+      elasticsearch:
         condition: service_healthy
     networks:
       - ecommerce-network
