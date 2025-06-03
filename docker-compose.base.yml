@@ -27,6 +27,11 @@ services:
     build:
       context: ./APIGateway
       dockerfile: Dockerfile
+      args:
+        GITHUB_USERNAME: ${GITHUB_USERNAME}
+        GITHUB_TOKEN: ${GITHUB_TOKEN}
+    env_file:
+      - .env
     environment:
       - ASPNETCORE_ENVIRONMENT=Staging
     volumes:
