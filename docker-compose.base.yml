@@ -35,7 +35,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Staging
     volumes:
-      - D:\E-Commerce\Services\SSC.pfx:/app/certificate.pfx:ro
+      - D:\Microservice\Services\SSC.pfx:/app/certificate.pfx:ro
     networks:
       - ecommerce-network
     deploy:
@@ -44,10 +44,10 @@ services:
         condition: always
 
   nginx:
-    image: nginx:latest
+    image: nginx:alpine
     container_name: LoadBalancer
     ports:
-      - "80:80"
+      - "8090:8090"
       - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
